@@ -17,10 +17,10 @@ describe('ForecastCard', () => {
     },
     weather: [{ icon: '01d' }], // Weather icon
   };
-  const timezone = 'America/New_York';
+  const timezone = -14400;
 
   beforeEach(() => {
-    convertUnixDateToString.mockReturnValue('Monday, May 5'); // Mocked date string
+    convertUnixDateToString.mockReturnValue('Monday'); // Mocked date string
     getWeatherIconUrl.mockReturnValue('http://example.com/icon.png'); // Mocked icon URL
   });
 
@@ -30,7 +30,7 @@ describe('ForecastCard', () => {
 
   it('renders the correct date', () => {
     const { getByText } = render(<ForecastCard forecast={forecast} timezone={timezone} />);
-    expect(getByText('Monday, May 5')).toBeInTheDocument();
+    expect(getByText('Monday')).toBeInTheDocument();
   });
 
   it('renders the correct temperature', () => {
