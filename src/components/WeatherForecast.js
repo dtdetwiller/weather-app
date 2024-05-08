@@ -1,8 +1,19 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { ForecastCard } from './ForecastCard';
 import { capitalizeFirstLetter, getWeatherIconUrl } from '../utils';
 
-export const WeatherForecast = ({ forecast }) => {
+export const WeatherForecast = ({ forecast, coords }) => {
+  const [savedLocationButtonText, setSavedLocationButtonText] = new useState('Save');
+
+  // grab the local storage for the saved locations
+  const coordsKey = `${coords?.lat},${coords?.lon}`;
+  // const initialSavedLocations = JSON.parse(localStorage.getItem('saved-locations')) || [];
+  // if (initialSavedLocations.includes(coordsKey)) {
+  //   setSavedLocationButtonText('Un-Save');
+  // } else {
+  //   setSavedLocationButtonText('Save');
+  // }
+
   // Get the location
   const cityName = forecast.city.name;
   const country = forecast.city.country;
@@ -34,20 +45,35 @@ export const WeatherForecast = ({ forecast }) => {
     }
   });
   const fiveDayForecast = Object.values(fiveDayForecastData);
-  console.log(fiveDayForecast)
 
   // Get the 5 day forecast cards
   const fiveDayForecastCards = fiveDayForecast.map((day, index) => (
     <ForecastCard key={index} forecast={day} timezone={timezone}/>
   ))
 
+  const handleSaveLocation = (e) => {
+    let savedLocations = JSON.parse(localStorage.getItem('saved-locations')) || [];
+    console.log(savedLocations)
+    // Unsave
+    if (!savedLocations.includes(coordsKey)) {
+      savedLocations.push(coordsKey);
+      localStorage.setItem('saved-locations', JSON.stringify(savedLocations));
+      setSavedLocationButtonText('Un-Save');
+    }
+  }
+
   return (
     <div className='dark:text-white'>
 
       {/* Current weather conditions */}
       <div className=''>
-        <div className='text-lg font-bold dark:text-white'>
-            Current weather in {cityName}, {country}
+        <div className="flex justify-between">
+          <div className='text-lg font-bold dark:text-white'>
+              Current weather in {cityName}, {country}
+          </div>
+          <button className='px-2 border border-gray-300 rounded-md' onClick={(e) => handleSaveLocation(e)} value="">
+            {savedLocationButtonText}
+          </button>
         </div>
         <div className='flex items-center'>
           {/* Icon */}

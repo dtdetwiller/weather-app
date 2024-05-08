@@ -8,6 +8,8 @@ import { RecentSearchCard } from '../RecentSearchCard';
 export const MainLayout = () => {
   const [coords, setCoords] = useState(null);
   const [recentSearches, setRecentSearches] = useState(JSON.parse(localStorage.getItem('recent-searches')) || []);
+  const [savedLocations, setSavedLocations] = useState(JSON.parse(localStorage.getItem('saved-locations')) || []);
+
 
   // Query for weather data
   const {
@@ -22,6 +24,19 @@ export const MainLayout = () => {
   const recentSearchCards = recentSearches.map((recentSearch, index) => (
     <RecentSearchCard key={index} location={recentSearch} setCoords={setCoords} />
   ));
+
+  const savedLocationCards = savedLocations.map((sl, index) => {
+    const coords = sl.split(',');
+    if (!coords) {
+      return;
+    }
+
+    return (
+      <div>
+        {coords[0]} {coords[1]}
+      </div>
+    )
+  });
   
   /**
    * Click handler for clearing the recent searches
@@ -30,6 +45,7 @@ export const MainLayout = () => {
     localStorage.removeItem('recent-searches');
     setRecentSearches([]);
   }
+  
 
   return (
     <div className='flex flex-col h-full gap-10'>
@@ -39,7 +55,7 @@ export const MainLayout = () => {
       
       {/* Forecast section */}
       {isSuccess && coords &&
-        <WeatherForecast forecast={forecast}/>
+        <WeatherForecast forecast={forecast} coords={coords} />
       }
 
       {/* Recent Searches section */}
@@ -50,6 +66,17 @@ export const MainLayout = () => {
           </div>
           <div className='flex flex-wrap justify-center w-full gap-2 mx-auto'>
             {recentSearchCards}
+          </div>
+        </div>
+      }
+
+      {!coords && recentSearches.length > 0 &&
+        <div className='flex flex-col gap-2'>
+          <div className='text-lg font-bold dark:text-white'>
+            Saved Locations <span onClick={clearRecentSearches} className='text-sm font-normal cursor-pointer hover:underline '>Clear</span>
+          </div>
+          <div className='flex flex-wrap justify-center w-full gap-2 mx-auto'>
+            {savedLocationCards}
           </div>
         </div>
       }
