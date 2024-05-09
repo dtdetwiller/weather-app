@@ -3,13 +3,12 @@ import { Search } from '../Search';
 import { useQuery } from '@tanstack/react-query';
 import { fetchWeatherData } from '../../api';
 import { WeatherForecast } from '../WeatherForecast';
-import { RecentSearchCard } from '../RecentSearchCard';
+import { SearchCard } from '../SearchCard';
 
 export const MainLayout = () => {
   const [coords, setCoords] = useState(null);
   const [recentSearches, setRecentSearches] = useState(JSON.parse(localStorage.getItem('recent-searches')) || []);
   const [savedLocations, setSavedLocations] = useState(JSON.parse(localStorage.getItem('saved-locations')) || []);
-
 
   // Query for weather data
   const {
@@ -22,21 +21,12 @@ export const MainLayout = () => {
 
   // Create recent search cards
   const recentSearchCards = recentSearches.map((recentSearch, index) => (
-    <RecentSearchCard key={index} location={recentSearch} setCoords={setCoords} />
+    <SearchCard key={index} location={recentSearch} setCoords={setCoords} />
   ));
 
-  const savedLocationCards = savedLocations.map((sl, index) => {
-    const coords = sl.split(',');
-    if (!coords) {
-      return;
-    }
-
-    return (
-      <div>
-        {coords[0]} {coords[1]}
-      </div>
-    )
-  });
+  const savedLocationCards = savedLocations.map((sl, index) => (
+    <SearchCard key={index} location={sl} setCoords={setCoords} />
+  ));
   
   /**
    * Click handler for clearing the recent searches
@@ -55,7 +45,7 @@ export const MainLayout = () => {
       
       {/* Forecast section */}
       {isSuccess && coords &&
-        <WeatherForecast forecast={forecast} coords={coords} />
+        <WeatherForecast forecast={forecast} coords={coords} setSavedLocations={setSavedLocations} />
       }
 
       {/* Recent Searches section */}
@@ -70,10 +60,10 @@ export const MainLayout = () => {
         </div>
       }
 
-      {!coords && recentSearches.length > 0 &&
+      {!coords && savedLocations.length > 0 &&
         <div className='flex flex-col gap-2'>
           <div className='text-lg font-bold dark:text-white'>
-            Saved Locations <span onClick={clearRecentSearches} className='text-sm font-normal cursor-pointer hover:underline '>Clear</span>
+            Saved Locations
           </div>
           <div className='flex flex-wrap justify-center w-full gap-2 mx-auto'>
             {savedLocationCards}

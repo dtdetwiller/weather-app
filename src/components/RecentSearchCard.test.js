@@ -1,6 +1,6 @@
 import React from 'react';
 import { render, fireEvent } from '@testing-library/react';
-import { RecentSearchCard } from './RecentSearchCard';
+import { RecentSearchCard } from './SearchCard';
 
 describe('RecentSearchCard', () => {
   const location = {

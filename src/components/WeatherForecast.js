@@ -1,18 +1,17 @@
-import React, { useState } from 'react'
+import React, { useState, useEffect } from 'react'
 import { ForecastCard } from './ForecastCard';
 import { capitalizeFirstLetter, getWeatherIconUrl } from '../utils';
 
-export const WeatherForecast = ({ forecast, coords }) => {
+export const WeatherForecast = ({ forecast, coords, setSavedLocations }) => {
   const [savedLocationButtonText, setSavedLocationButtonText] = new useState('Save');
 
-  // grab the local storage for the saved locations
-  const coordsKey = `${coords?.lat},${coords?.lon}`;
-  // const initialSavedLocations = JSON.parse(localStorage.getItem('saved-locations')) || [];
-  // if (initialSavedLocations.includes(coordsKey)) {
-  //   setSavedLocationButtonText('Un-Save');
-  // } else {
-  //   setSavedLocationButtonText('Save');
-  // }
+  // If location is already saved set the text of the button to un-save
+  useEffect(() => {
+    let savedLocations = JSON.parse(localStorage.getItem('saved-locations')) || [];
+    if (savedLocations.some(l => l.lat === coords.lat && l.lon === coords.lon)) {
+      setSavedLocationButtonText('Un-Save');
+    }
+  }, [coords]);
 
   // Get the location
   const cityName = forecast.city.name;
@@ -51,14 +50,33 @@ export const WeatherForecast = ({ forecast, coords }) => {
     <ForecastCard key={index} forecast={day} timezone={timezone}/>
   ))
 
+  /**
+   * Handler for saving a location
+   */
   const handleSaveLocation = (e) => {
     let savedLocations = JSON.parse(localStorage.getItem('saved-locations')) || [];
-    console.log(savedLocations)
-    // Unsave
-    if (!savedLocations.includes(coordsKey)) {
-      savedLocations.push(coordsKey);
+    const location = { 
+      name: cityName, 
+      country: country,
+      lat: coords.lat,
+      lon: coords.lon
+    };
+
+    // Check for duplicates based on lat and lon
+    const isDuplicate = savedLocations.some(l => l.lat === coords.lat && l.lon === coords.lon);
+    
+    // Save
+    if (!isDuplicate) {
+      savedLocations.push(location);
       localStorage.setItem('saved-locations', JSON.stringify(savedLocations));
       setSavedLocationButtonText('Un-Save');
+      setSavedLocations(savedLocations);
+    // Un-save
+    } else {
+      savedLocations = savedLocations.filter(l => l.lat != coords.lat && l.lon != coords.lon);
+      localStorage.setItem('saved-locations', JSON.stringify(savedLocations));
+      setSavedLocationButtonText('Save');
+      setSavedLocations(savedLocations);
     }
   }
 
