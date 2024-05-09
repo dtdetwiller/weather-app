@@ -89,7 +89,7 @@ export const WeatherForecast = ({ forecast, coords, setSavedLocations }) => {
           <div className='text-lg font-bold dark:text-white'>
               Current weather in {cityName}, {country}
           </div>
-          <button className='px-2 border border-gray-300 rounded-md' onClick={(e) => handleSaveLocation(e)} value="">
+          <button className='px-2 border border-gray-200 rounded-lg cursor-pointer dark:text-white hover:bg-gray-100 hover:dark:bg-gray-900 dark:border-gray-700 bg-gray-50 dark:bg-gray-900' onClick={(e) => handleSaveLocation(e)} value="">
             {savedLocationButtonText}
           </button>
         </div>
